@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: spring-batch-mybatis
+  config:
+    import: classpath:secret.yml
+  batch:
+    job:
+      enabled: false
+  sql:
+    init:
+      mode: never
+server:
+  port: 8011

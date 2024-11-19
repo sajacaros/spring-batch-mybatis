@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="kr.study.batch.mapper.TableMetadataMapper">
+    <select id="fetchTableMetadata" resultType="kr.study.batch.vo.TableMetadata">
+        SELECT
+            tbl_nm AS tableName,
+            tbl_korn_nm AS description
+        FROM t_mf_mng_schm_tbl
+        where meta_mng_inst_id = 6
+            	and info_sys_id = 2
+            	and db_id = 2
+        OFFSET #{_skiprows}
+        LIMIT #{_pagesize}
+    </select>
+</mapper>

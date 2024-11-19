@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="kr.study.batch.mapper.TableMetadataMapper">
+    <insert id="insertTableMetadata">
+        INSERT INTO embedding.schema_meta
+        (tbl_nm, description, embedding)
+        VALUES( #{tableName}, #{description}, #{embedding} );
+    </insert>
+</mapper>
