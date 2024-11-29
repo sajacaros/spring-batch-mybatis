@@ -10,7 +10,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 public interface BatchService {
-    void batch() throws Exception;
+    void batchTable() throws Exception;
+
+    void batchColumn() throws Exception;
+
+    void batchPrimaryKey() throws Exception;
 
     @Service
     @Slf4j
@@ -21,17 +25,47 @@ public interface BatchService {
 
         @Autowired
         @Qualifier("tableMetadataJob")
-        private Job job;
+        private Job tableJob;
+
+        @Autowired
+        @Qualifier("columnMetadataJob")
+        private Job columnJob;
+
+        @Autowired
+        @Qualifier("primaryKeyMetadataJob")
+        private Job primaryKeyJob;
 
         @Override
-        public void batch() throws Exception {
+        public void batchTable() throws Exception {
             JobExecution run = jobLauncher.run(
-                    job,
+                    tableJob,
                     new JobParametersBuilder()
                             .addLong("time", System.currentTimeMillis())
                             .toJobParameters()
             );
-            log.info("sync] job id : {}, state : {}", run.getJobId(), run.getExitStatus());
+            log.info("sync] table job id : {}, state : {}", run.getJobId(), run.getExitStatus());
+        }
+
+        @Override
+        public void batchColumn() throws Exception {
+            JobExecution run = jobLauncher.run(
+                    columnJob,
+                    new JobParametersBuilder()
+                            .addLong("time", System.currentTimeMillis())
+                            .toJobParameters()
+            );
+            log.info("sync] column job id : {}, state : {}", run.getJobId(), run.getExitStatus());
+        }
+
+        @Override
+        public void batchPrimaryKey() throws Exception {
+            JobExecution run = jobLauncher.run(
+                    primaryKeyJob,
+                    new JobParametersBuilder()
+                            .addLong("time", System.currentTimeMillis())
+                            .toJobParameters()
+            );
+            log.info("sync] primary key job id : {}, state : {}", run.getJobId(), run.getExitStatus());
         }
     }
 }

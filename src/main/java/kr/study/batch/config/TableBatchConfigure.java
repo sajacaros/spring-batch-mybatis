@@ -17,6 +17,7 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,34 +25,35 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Configuration
 @Slf4j
-public class BatchConfigure {
+public class TableBatchConfigure {
 
     private static final int PAGE_SIZE = 100;
     private static final int CHUNK_SIZE = 10;
 
     @Bean
-    public Job tableMetadataJob(JobRepository jobRepository, Step embeddingStep) {
+    public Job tableMetadataJob(JobRepository jobRepository, @Qualifier("tableEmbeddingStep") Step tableEmbeddingStep) {
         log.info("===== tableMetadataJob =====");
 
         return new JobBuilder("tableMetadataJob", jobRepository)
-                .start(embeddingStep)
+                .start(tableEmbeddingStep)
                 .build();
     }
 
     @Bean
     @JobScope
-    public Step embeddingStep(JobRepository jobRepository,
+    public Step tableEmbeddingStep(JobRepository jobRepository,
                               PlatformTransactionManager transactionManager,
                               MyBatisPagingItemReader<TableMetadata> reader,
                               ItemProcessor<TableMetadata, TableMetadata> processor,
                               MyBatisBatchItemWriter<TableMetadata> writer
     ) {
-        log.info("===== embeddingStep =====");
-        return new StepBuilder("embeddingStep", jobRepository)
+        log.info("===== tableEmbeddingStep =====");
+        return new StepBuilder("tableEmbeddingStep", jobRepository)
                 .<TableMetadata, TableMetadata>chunk(CHUNK_SIZE, transactionManager)
                 .reader(reader)
                 .processor(processor)
@@ -86,6 +88,13 @@ public class BatchConfigure {
         log.info("===== processor =====");
         final AtomicInteger counter = new AtomicInteger(0);
         return item -> {
+            if (
+                    Objects.isNull(item.getDescription())
+                            || item.getDescription().isEmpty()
+                            || item.getDescription().equals("사용안함")
+            ) {
+                return null;
+            }
             item.setEmbedding(embeddingService.embedding(item.getDescription()));
             log.info("{}] processor, item : {}", counter.getAndIncrement(), item);
             return item;

@@ -1,16 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="kr.study.batch.mapper.TableMetadataMapper">
+<mapper namespace="kr.study.batch.mapper.MetadataMapper">
     <select id="fetchTableMetadata" resultType="kr.study.batch.vo.TableMetadata">
-        SELECT
-            tbl_nm AS tableName,
-            tbl_korn_nm AS description
+        SELECT tbl_nm      AS tableName,
+               tbl_korn_nm AS description
         FROM t_mf_mng_schm_tbl
         where meta_mng_inst_id = 6
-            	and info_sys_id = 2
-            	and db_id = 2
-        OFFSET #{_skiprows}
-        LIMIT #{_pagesize}
+          and info_sys_id = 6
+          and db_id = 6
+        OFFSET #{_skiprows} LIMIT #{_pagesize}
+    </select>
+
+    <select id="fetchColumnMetadata" resultType="kr.study.batch.vo.ColumnMetadata">
+        SELECT tbl_nm      AS tableName,
+               col_nm      AS columnName,
+               col_korn_nm AS description,
+               data_typ_cd    AS dataTypeCode
+        FROM t_mf_mng_schm_col
+        where meta_mng_inst_id = 6
+          and info_sys_id = 6
+          and db_id = 6
+        OFFSET #{_skiprows} LIMIT #{_pagesize}
+    </select>
+
+    <select id="fetchPrimaryKeyMetadata" resultType="kr.study.batch.vo.PrimaryKeyMetadata">
+        SELECT
+            col.tbl_nm AS tableName,
+            col.col_nm AS columnName,
+            col.col_korn_nm AS description,
+            CASE
+                WHEN pk.cnstrt_col_nm IS NOT NULL THEN 'Y'
+                ELSE 'N'
+            END AS isPrimaryKey
+        FROM t_mf_mng_schm_col col
+        LEFT JOIN t_mf_mng_schm_cnstrt_dtl pk
+            ON col.meta_mng_inst_id = pk.meta_mng_inst_id
+            AND col.info_sys_id = pk.info_sys_id
+            AND col.db_id = pk.db_id
+            AND col.schm_nm = pk.schm_nm
+            AND col.tbl_nm = pk.tbl_nm
+            AND col.col_nm = pk.cnstrt_col_nm
+        WHERE
+            col.meta_mng_inst_id = 6
+            AND col.info_sys_id = 6
+            AND col.db_id = 6
+        OFFSET #{_skiprows} LIMIT #{_pagesize}
     </select>
 </mapper>

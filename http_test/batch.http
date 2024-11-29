@@ -1,2 +1,8 @@
-###
-POST http://localhost:8011/batch/run
+### table -> embedding -> table
+POST http://localhost:8011/batch/table
+
+### column -> - -> column
+POST http://localhost:8011/batch/column
+
+### primary key -> - -> primary key
+POST http://localhost:8011/batch/primary-key

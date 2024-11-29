@@ -9,16 +9,20 @@ import java.util.List;
 
 @Getter
 @Setter
-public class TableMetadata {
+public class ColumnMetadata {
     String tableName;
+    String columnName;
     String description;
+    String dataTypeCode;
     float[] embedding;
 
     @Override
     public String toString() {
-        return "TableMetadata{" +
+        return "ColumnMetadata{" +
                 "tableName='" + tableName + '\'' +
+                ", columnName='" + columnName + '\'' +
                 ", description='" + description + '\'' +
+                ", dataTypeCode='" + dataTypeCode + '\'' +
                 ", embedding=" + (embedding != null ? Arrays.toString(Arrays.copyOf(embedding, Math.min(embedding.length, 1))) : "null") +
                 '}';
     }

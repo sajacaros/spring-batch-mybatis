@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="kr.study.batch.mapper.TableMetadataMapper">
+<mapper namespace="kr.study.batch.mapper.MetadataMapper">
     <insert id="insertTableMetadata">
-        INSERT INTO embedding.schema_meta
+        INSERT INTO embedding.table_meta
         (tbl_nm, description, embedding)
         VALUES( #{tableName}, #{description}, #{embedding} );
     </insert>
+    <insert id="insertColumnMetadata">
+        INSERT INTO embedding.column_meta
+        (tbl_nm, col_nm, description, data_type_code, embedding)
+        VALUES( #{tableName}, #{columnName}, #{description}, #{dataTypeCode}, #{embedding} );
+    </insert>
+    <update id="updateIsPrimaryKey">
+        UPDATE embedding.column_meta
+        SET is_primary_key = #{isPrimaryKey}
+        WHERE tbl_nm = #{tableName}
+        AND col_nm = #{columnName}
+    </update>
 </mapper>
