@@ -14,6 +14,7 @@ public class ColumnMetadata {
     String columnName;
     String description;
     String dataTypeCode;
+    String isPrimaryKey;
     float[] embedding;
 
     @Override
@@ -23,6 +24,7 @@ public class ColumnMetadata {
                 ", columnName='" + columnName + '\'' +
                 ", description='" + description + '\'' +
                 ", dataTypeCode='" + dataTypeCode + '\'' +
+                ", isPrimaryKey='" + isPrimaryKey + '\'' +
                 ", embedding=" + (embedding != null ? Arrays.toString(Arrays.copyOf(embedding, Math.min(embedding.length, 1))) : "null") +
                 '}';
     }

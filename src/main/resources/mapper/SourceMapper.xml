@@ -3,17 +3,61 @@
 
 <mapper namespace="kr.study.batch.mapper.MetadataMapper">
     <select id="fetchTableMetadata" resultType="kr.study.batch.vo.TableMetadata">
-        SELECT tbl_nm      AS tableName,
-               tbl_korn_nm AS description
-        FROM t_mf_mng_schm_tbl
-        where meta_mng_inst_id = 6
-          and info_sys_id = 6
-          and db_id = 6
+        SELECT
+            c.relname AS tableName,
+            d.description AS description
+        FROM
+            pg_catalog.pg_class c
+        LEFT JOIN
+            pg_catalog.pg_description d
+            ON c.oid = d.objoid AND d.objsubid = 0 -- Ensure it's a table description
+        JOIN
+            pg_catalog.pg_namespace n
+            ON c.relnamespace = n.oid
+        WHERE
+            c.relkind = 'r' -- Only regular tables
+            AND n.nspname = 'bookstore1' -- Specify schema name
+        ORDER BY
+            c.relname
         OFFSET #{_skiprows} LIMIT #{_pagesize}
+    <!-- SELECT tbl_nm      AS tableName,
+           tbl_korn_nm AS description
+    FROM t_mf_mng_schm_tbl
+    where meta_mng_inst_id = 6
+      and info_sys_id = 6
+      and db_id = 6
+   OFFSET #{_skiprows} LIMIT #{_pagesize} -->
     </select>
 
     <select id="fetchColumnMetadata" resultType="kr.study.batch.vo.ColumnMetadata">
-        SELECT tbl_nm      AS tableName,
+        SELECT
+            c.table_name AS tableName
+          , c.column_name AS columnName
+          , pgd.description AS description
+          , c.udt_name as dataTypeCode
+          , CASE
+                WHEN kcu.column_name IS NOT NULL THEN 'Y'
+                ELSE 'N'
+            END AS isPrimaryKey
+        FROM
+            information_schema.columns c
+        LEFT JOIN
+            information_schema.key_column_usage kcu
+            ON c.table_name = kcu.table_name
+            AND c.table_schema = kcu.table_schema
+            AND c.column_name = kcu.column_name
+        LEFT JOIN
+            pg_catalog.pg_statio_all_tables st
+            ON st.schemaname = c.table_schema AND st.relname = c.table_name
+        LEFT JOIN
+            pg_catalog.pg_description pgd
+            ON pgd.objoid = st.relid AND pgd.objsubid = c.ordinal_position
+        WHERE
+            c.table_schema = 'bookstore1' -- Specify schema name
+        ORDER BY
+            c.table_name, c.ordinal_position
+        OFFSET #{_skiprows} LIMIT #{_pagesize}
+        <!-- SELECT tbl_nm      AS tableName,
                col_nm      AS columnName,
                col_korn_nm AS description,
                data_typ_cd    AS dataTypeCode
@@ -21,7 +65,7 @@
         where meta_mng_inst_id = 6
           and info_sys_id = 6
           and db_id = 6
-        OFFSET #{_skiprows} LIMIT #{_pagesize}
+        OFFSET #{_skiprows} LIMIT #{_pagesize} -->
     </select>
 
     <select id="fetchPrimaryKeyMetadata" resultType="kr.study.batch.vo.PrimaryKeyMetadata">

@@ -27,8 +27,6 @@ public class BatchController {
     @PostMapping("/batch/primary-key")
     public void runPrimaryKey() throws Exception {
         log.info("run primary key");
-        batchService.batchPrimaryKey
-
-                ();
+        batchService.batchPrimaryKey();
     }
 }

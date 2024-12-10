@@ -27,7 +27,7 @@ public class AiConfig {
                 openAiApi,
                 MetadataMode.EMBED,
                 OpenAiEmbeddingOptions.builder()
-                        .withModel(OpenAiApi.EmbeddingModel.TEXT_EMBEDDING_ADA_002.getValue())
+                        .withModel(OpenAiApi.EmbeddingModel.TEXT_EMBEDDING_3_SMALL.getValue())
                         .build()
         );
     }

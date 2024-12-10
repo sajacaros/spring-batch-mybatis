@@ -1,7 +1,6 @@
 package kr.study.batch.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import kr.study.batch.service.EmbeddingService;
 import kr.study.batch.vo.TableMetadata;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -10,7 +9,8 @@ import org.mybatis.spring.batch.MyBatisBatchItemWriter;
 import org.mybatis.spring.batch.MyBatisPagingItemReader;
 import org.mybatis.spring.batch.builder.MyBatisBatchItemWriterBuilder;
 import org.mybatis.spring.batch.builder.MyBatisPagingItemReaderBuilder;
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TableBatchConfigure {
 
     private static final int PAGE_SIZE = 100;
-    private static final int CHUNK_SIZE = 10;
+    private static final int CHUNK_SIZE = 100;
 
     @Bean
     public Job tableMetadataJob(JobRepository jobRepository, @Qualifier("tableEmbeddingStep") Step tableEmbeddingStep) {
@@ -84,7 +84,7 @@ public class TableBatchConfigure {
 
     @Bean
     @StepScope
-    public ItemProcessor<TableMetadata, TableMetadata> processor(EmbeddingService embeddingService) {
+    public ItemProcessor<TableMetadata, TableMetadata> processor() {
         log.info("===== processor =====");
         final AtomicInteger counter = new AtomicInteger(0);
         return item -> {
@@ -95,8 +95,6 @@ public class TableBatchConfigure {
             ) {
                 return null;
             }
-            item.setEmbedding(embeddingService.embedding(item.getDescription()));
-            log.info("{}] processor, item : {}", counter.getAndIncrement(), item);
             return item;
         };
     }

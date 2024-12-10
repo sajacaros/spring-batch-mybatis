@@ -9,8 +9,8 @@
     </insert>
     <insert id="insertColumnMetadata">
         INSERT INTO embedding.column_meta
-        (tbl_nm, col_nm, description, data_type_code, embedding)
-        VALUES( #{tableName}, #{columnName}, #{description}, #{dataTypeCode}, #{embedding} );
+        (tbl_nm, col_nm, description, data_type_code, is_primary_key, embedding)
+        VALUES( #{tableName}, #{columnName}, #{description}, #{dataTypeCode}, #{isPrimaryKey}, #{embedding} );
     </insert>
     <update id="updateIsPrimaryKey">
         UPDATE embedding.column_meta
